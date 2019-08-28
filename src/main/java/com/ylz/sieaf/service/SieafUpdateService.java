@@ -59,7 +59,7 @@ public class SieafUpdateService {
 
     public byte[] readVersionFile(String version) throws Exception {
         String filePath = SieafVersionTool.findVersionPath(version);
-        if(!filePath.isEmpty()) {
+        if(filePath == null || !filePath.isEmpty()) {
             throw new Exception("could not file sieaf version!");
         }
 

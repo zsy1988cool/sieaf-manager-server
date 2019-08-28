@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileFilter;
 
 public class SieafVersionTool {
-    private static final String verionDir = System.getProperty("java.io.tmpdir") + "/sieaf/";
+    private static final String versionDir= System.getProperty("java.io.tmpdir") + "/sieaf/";
     public static final long INVALID_VERSION = -1;
     public static final int VERSION_LEN = 3;
 
@@ -41,7 +41,7 @@ public class SieafVersionTool {
     }
 
     public static String findVersionPath(String version) {
-        String absolutePath = verionDir + version;
+        String absolutePath = versionDir + version;
         File verFile = new File(absolutePath);
         if(!verFile.exists() || verFile.isDirectory()) {
             return null;
@@ -51,7 +51,7 @@ public class SieafVersionTool {
     }
 
     public static File findMaxVersionFile() {
-        File verDir = new File(verionDir);
+        File verDir = new File(versionDir);
         File maxVerFile = null;
         if(verDir.exists() && verDir.isDirectory()) {
             File[] verFiles = verDir.listFiles(new SieafFileFilter());
