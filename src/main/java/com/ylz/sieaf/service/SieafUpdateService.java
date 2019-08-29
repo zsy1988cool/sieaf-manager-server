@@ -27,12 +27,13 @@ public class SieafUpdateService {
 
         StringBuilder contextPath = new StringBuilder();
         contextPath.append(request.getScheme())
-                .append(".//")
+                .append("://")
                 .append(request.getServerName())
                 .append(":")
                 .append(request.getServerPort())
-                .append("/update/downloads/")
-                .append(version);
+                .append("/sieaf/update/downloads/")
+                .append(version)
+                .append(".zip");
         return contextPath.toString();
     }
 
@@ -40,7 +41,7 @@ public class SieafUpdateService {
         // find max version
         File maxVersionFile = SieafVersionTool.findMaxVersionFile();
         if(maxVersionFile != null) {
-            String maxVersion = maxVersionFile.getName();
+            String maxVersion = SieafVersionTool.getSieafVersion(maxVersionFile.getName());
             long serverVerValue = SieafVersionTool.gainVersionValue(maxVersion);
             long localVerValue = SieafVersionTool.gainVersionValue(version);
             if(serverVerValue > localVerValue) {
@@ -59,7 +60,7 @@ public class SieafUpdateService {
 
     public byte[] readVersionFile(String version) throws Exception {
         String filePath = SieafVersionTool.findVersionPath(version);
-        if(filePath == null || !filePath.isEmpty()) {
+        if(filePath == null || filePath.isEmpty()) {
             throw new Exception("could not file sieaf version!");
         }
 

@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileFilter;
 
 public class SieafVersionTool {
-    private static final String versionDir= System.getProperty("java.io.tmpdir") + "/sieaf/";
+    private static final String versionDir= System.getProperty("java.io.tmpdir") + "sieaf/";
     public static final long INVALID_VERSION = -1;
     public static final int VERSION_LEN = 3;
 
@@ -19,7 +19,7 @@ public class SieafVersionTool {
         if(!version.startsWith("v"))
             return INVALID_VERSION;
 
-        String splitChar = ".";
+        String splitChar = "\\.";
         String[] subVList = version.substring(1).split(splitChar);
         if(VERSION_LEN == subVList.length) {
             long baseValue = 0;
@@ -59,7 +59,8 @@ public class SieafVersionTool {
             long preValue = 0;
             for(File vF : verFiles) {
                 if(vF.isFile()) {
-                    long versionValue = gainVersionValue(vF.getName());
+                    String version = getSieafVersion(vF.getName());
+                    long versionValue = gainVersionValue(version);
                     if(versionValue != INVALID_VERSION && versionValue > preValue) {
                         maxVerFile = vF;
                         preValue = versionValue;
@@ -71,6 +72,11 @@ public class SieafVersionTool {
         return maxVerFile;
     }
 
+    public static String getSieafVersion(String fileName)
+    {
+        return fileName.replaceFirst(".zip", "");
+    }
+
     public static class SieafFileFilter implements FileFilter {
 
         @Override
@@ -79,7 +85,7 @@ public class SieafVersionTool {
                 return false;
 
             String name = file.getName();
-            return name.startsWith("v");
+            return name.startsWith("v") && name.endsWith("zip");
         }
     }
 }

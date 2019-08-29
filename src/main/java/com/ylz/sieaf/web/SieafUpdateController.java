@@ -7,6 +7,7 @@
 package com.ylz.sieaf.web;
 
 import com.ylz.sieaf.entity.ResultModel;
+import com.ylz.sieaf.entity.SieafVersion;
 import com.ylz.sieaf.service.SieafUpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,16 +26,22 @@ public class SieafUpdateController {
     @Autowired
     SieafUpdateService sieafUpdateService;
 
-    @PostMapping(value = "/findUpdateVersion")
-    ResultModel findUpdateVersion(@RequestParam(value = "version", required = true) String clientVersion) {
+    @ResponseBody
+    @PostMapping(value = "/queryUpdate")
+    ResultModel queryUpdate(@RequestBody SieafVersion sieafVersion) {
         ResultModel resultModel = new ResultModel();
-        Map<String, String> updateVersionInfo = sieafUpdateService.findUpdateVersionInfo(clientVersion);
-        if(updateVersionInfo != null) {
-            resultModel.setFlag(ResultModel.SUCCESS);
-            resultModel.setData(updateVersionInfo);
-        } else {
-            resultModel.setFlag(ResultModel.FAILED);
+        String clientVersion = sieafVersion.getVersion();
+        if(clientVersion != null && !clientVersion.isEmpty())
+        {
+            Map<String, String> updateVersionInfo = sieafUpdateService.findUpdateVersionInfo(clientVersion);
+            if(updateVersionInfo != null) {
+                resultModel.setFlag(ResultModel.SUCCESS);
+                resultModel.setData(updateVersionInfo);
+                return resultModel;
+            }
         }
+
+        resultModel.setFlag(ResultModel.FAILED);
         return resultModel;
     }
 
