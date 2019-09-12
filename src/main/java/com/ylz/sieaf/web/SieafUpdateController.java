@@ -26,6 +26,11 @@ public class SieafUpdateController {
     @Autowired
     SieafUpdateService sieafUpdateService;
 
+    @RequestMapping(value="/welcome")
+    public String welcome() {
+        return "Welcome";
+    }
+
     @ResponseBody
     @PostMapping(value = "/queryUpdate")
     ResultModel queryUpdate(@RequestBody SieafVersion sieafVersion) {
