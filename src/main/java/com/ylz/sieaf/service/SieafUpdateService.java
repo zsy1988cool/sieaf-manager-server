@@ -9,6 +9,9 @@ package com.ylz.sieaf.service;
 
 import com.ylz.sieaf.core.macro.SieafDef;
 import com.ylz.sieaf.core.util.SieafVersionTool;
+import com.ylz.sieaf.entity.SieafModule;
+import com.ylz.sieaf.entity.SieafVersion;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,7 +25,7 @@ import java.util.Map;
 
 @Service
 public class SieafUpdateService {
-    private String buildDownloadUrl(String version) {
+    private String buildDownloadUrl(String moduleId, String version) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
         StringBuilder contextPath = new StringBuilder();
@@ -32,34 +35,42 @@ public class SieafUpdateService {
                 .append(":")
                 .append(request.getServerPort())
                 .append("/sieaf/update/downloads/")
+                .append(moduleId)
+                .append("/")
                 .append(version)
                 .append(".zip");
         return contextPath.toString();
     }
 
-    public Map<String, String> findUpdateVersionInfo(String version) {
+    public Map<String, String> findUpdateVersionInfo(SieafVersion sieafVersion) {
         // find max version
-        File maxVersionFile = SieafVersionTool.findMaxVersionFile();
+    	String versionStr = sieafVersion.getVersion();
+        File maxVersionFile = SieafVersionTool.findMaxVersionFile(sieafVersion.getModule());
         if(maxVersionFile != null) {
             String maxVersion = SieafVersionTool.getSieafVersion(maxVersionFile.getName());
             long serverVerValue = SieafVersionTool.gainVersionValue(maxVersion);
-            long localVerValue = SieafVersionTool.gainVersionValue(version);
+            long localVerValue = SieafVersionTool.gainVersionValue(versionStr);
             if(serverVerValue > localVerValue) {
                 Map<String, String> info = new HashMap<>();
                 info.put(SieafDef.SIEAF_NAME, "sieaf");
                 info.put(SieafDef.SIEAF_ALIAS, "sieaf dll");
-                info.put(SieafDef.SIEAF_OLD_VERSION, version);
+                info.put(SieafDef.SIEAF_OLD_VERSION, versionStr);
                 info.put(SieafDef.SIEAF_VERSION, maxVersion);
-                info.put(SieafDef.SIEAF_URL, buildDownloadUrl(maxVersion));
+                info.put(SieafDef.SIEAF_URL, buildDownloadUrl(sieafVersion.getModule(), maxVersion));
                 return info;
             }
         }
 
         return null;
     }
+    
+    public byte[] readStandardVersionFile(String versionStr) throws Exception {
+    	SieafVersion version = new SieafVersion(SieafModule.MODULE_STANDARD.getModuleId(), versionStr);
+    	return readVersionFile(version);
+    }
 
-    public byte[] readVersionFile(String version) throws Exception {
-        String filePath = SieafVersionTool.findVersionPath(version);
+    public byte[] readVersionFile(SieafVersion version) throws Exception {
+        String filePath = SieafVersionTool.findVersionPath(version.getModule(), version.getVersion());
         if(filePath == null || filePath.isEmpty()) {
             throw new Exception("could not file sieaf version!");
         }

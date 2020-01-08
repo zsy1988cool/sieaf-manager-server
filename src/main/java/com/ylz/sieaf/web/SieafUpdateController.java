@@ -38,7 +38,7 @@ public class SieafUpdateController {
         String clientVersion = sieafVersion.getVersion();
         if(clientVersion != null && !clientVersion.isEmpty())
         {
-            Map<String, String> updateVersionInfo = sieafUpdateService.findUpdateVersionInfo(clientVersion);
+            Map<String, String> updateVersionInfo = sieafUpdateService.findUpdateVersionInfo(sieafVersion);
             if(updateVersionInfo != null) {
                 resultModel.setFlag(ResultModel.SUCCESS);
                 resultModel.setData(updateVersionInfo);
@@ -49,14 +49,17 @@ public class SieafUpdateController {
         resultModel.setFlag(ResultModel.FAILED);
         return resultModel;
     }
-
-    @GetMapping(value = "/downloads/{version}", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<byte[]> downloads(@PathVariable(value="version") final String version) {
+  
+    @GetMapping(value = "/downloads/{module}/{version}", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<byte[]> downloads(@PathVariable(value="module") final String module, 
+    		@PathVariable(value="version") final String version) {
         try {
+        	SieafVersion sieafVersion = new SieafVersion(module, version);
+        	
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentDispositionFormData("attachment", new String(version.getBytes("UTF-8"), "ISO8859-1"));
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            return new ResponseEntity<>(sieafUpdateService.readVersionFile(version), httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(sieafUpdateService.readVersionFile(sieafVersion), httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
         }

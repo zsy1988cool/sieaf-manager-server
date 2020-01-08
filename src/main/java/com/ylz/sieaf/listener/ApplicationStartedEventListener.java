@@ -7,6 +7,6 @@ import org.springframework.context.ApplicationListener;
 public class ApplicationStartedEventListener implements ApplicationListener<ApplicationStartedEvent> {
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationStartedEvent) {
-        System.out.println("The Sieaf update dir is :" + SieafVersionTool.getUpdateDir());
+        System.out.println("The Sieaf update's root dir is locate at:" + SieafVersionTool.getRootdir());
     }
 }

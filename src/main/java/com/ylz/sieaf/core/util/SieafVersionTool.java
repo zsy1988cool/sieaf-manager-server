@@ -10,17 +10,33 @@ package com.ylz.sieaf.core.util;
 import java.io.File;
 import java.io.FileFilter;
 
+import com.ylz.sieaf.entity.SieafModule;
+
 public class SieafVersionTool {
     static {
         String tmpDir = System.getProperty("java.io.tmpdir");
-        String delimit = tmpDir.endsWith("\\") ? "" : "/";
-        versionDir=  tmpDir + delimit + "sieaf/";
+        String pathSplitChar = tmpDir.endsWith("\\") ? "" : "/";
+        
+        delimit = pathSplitChar;
+        rootDir=  tmpDir + pathSplitChar + "sieaf/";
     }
-    private static final String versionDir;
+    private static final String rootDir;
+	private static final String delimit;
+    
     public static final long INVALID_VERSION = -1;
     public static final int VERSION_LEN = 3;
 
-    public static String getUpdateDir() {
+    public static String getRootdir() {
+		return rootDir;
+	}
+
+    public static String getUpdateDir(String moduleId) {    	
+    	SieafModule module = SieafModule.fromModuleId(moduleId);
+    	if(module == SieafModule.MODULE_STANDARD) {
+    		return rootDir;
+    	}
+    	
+        String versionDir = rootDir + module.getModuleName() + "/";
         return versionDir;
     }
     public static long gainVersionValue(String version) {
@@ -48,8 +64,8 @@ public class SieafVersionTool {
         return INVALID_VERSION;
     }
 
-    public static String findVersionPath(String version) {
-        String absolutePath = versionDir + version;
+    public static String findVersionPath(String moduleId, String version) {
+        String absolutePath = getUpdateDir(moduleId) + version;
         File verFile = new File(absolutePath);
         if(!verFile.exists() || verFile.isDirectory()) {
             return null;
@@ -58,8 +74,8 @@ public class SieafVersionTool {
         return absolutePath;
     }
 
-    public static File findMaxVersionFile() {
-        System.out.println(versionDir);
+    public static File findMaxVersionFile(String moduleId) {
+        String versionDir = getUpdateDir(moduleId);
         File verDir = new File(versionDir);
         File maxVerFile = null;
         if(verDir.exists() && verDir.isDirectory()) {

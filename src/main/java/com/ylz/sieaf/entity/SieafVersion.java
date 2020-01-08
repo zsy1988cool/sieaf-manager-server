@@ -3,6 +3,11 @@ package com.ylz.sieaf.entity;
 public class SieafVersion {
     String version;
     String module;
+    
+    public SieafVersion(String m, String v) {
+    	version = v;
+    	module = m;
+    }
 
     public String getModule() {
 		return module;

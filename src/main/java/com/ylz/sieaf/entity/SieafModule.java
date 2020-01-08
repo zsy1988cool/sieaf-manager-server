@@ -28,7 +28,7 @@ public enum SieafModule {
 	public static SieafModule fromModuleId(String moduleId) {
 		SieafModule[] modules = SieafModule.values();
 		for(SieafModule module : modules) {
-			if(module.getModuleName().equals(moduleId)) {
+			if(module.getModuleId().equals(moduleId)) {
 				return module;
 			}
 		}
